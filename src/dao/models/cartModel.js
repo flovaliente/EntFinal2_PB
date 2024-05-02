@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import mongoosePaginate from "mongoose-paginate-v2";
 
 const cartCollection = "carts";
 
@@ -16,5 +17,7 @@ const Products = new Schema(
 const cartSchema = new mongoose.Schema({
     products: { type: [Products], default: [] }
 }, { timestamps: true }); //incluye fecha y hora de creacion
+
+cartSchema.plugin(mongoosePaginate);
 
 export default mongoose.model(cartCollection, cartSchema);

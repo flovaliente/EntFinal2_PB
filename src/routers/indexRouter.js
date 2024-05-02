@@ -1,6 +1,7 @@
 import { Router } from 'express';
 //import ProductManagerFS from '../clases/ProductManagerFS.js';
 import ProductManagerDB from '../dao/ProductManagerDB.js';
+import productModel from '../dao/models/productModel.js';
 
 const productManager = new ProductManagerDB();
 
@@ -8,8 +9,23 @@ const router = Router();
 
 router.get('/', async (req, res) => {
   try {
-    const products = await productManager.getProducts();
-    res.render('home', {products, title: "Products", style: "https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css"});
+    let products = await productModel.find();
+    products = products.map((p) => p.toJSON());
+    res.render("home", { title: "MongoDB Deploy ", products });
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).send('Error.');
+  }
+  
+});
+
+router.get('/products', async (req, res) => {
+  try {
+    let { limit = 5, page = 1 } = req.query;
+    //let products = await productManager.getProducts(limit, page);
+    let products = await productModel.find();
+    products = products.map((p) => p.toJSON());
+    res.render("products", { title: "Products w paginate", products });
   } catch (error) {
     console.log(error.message);
     res.status(500).send('Error.');

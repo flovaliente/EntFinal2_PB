@@ -23,18 +23,18 @@ export const init = (httpServer) =>{
         });
         
         let products = await productManager.getProducts();
-        socketClient.emit('listaProductos', products);
+        socketClient.emit('listaProductos', products.docs);
 
         socketClient.on('addProduct', async (newProduct) =>{
             await productManager.addProduct(newProduct);
             let products = await productManager.getProducts();
-            io.emit('listaProductos', products);
+            io.emit('listaProductos', products.docs);
         });
 
         socketClient.on('deleteProductById', async (idDelete) =>{
             await productManager.deleteProduct(idDelete);
             let products = await productManager.getProducts();
-            io.emit('listaProductos', products)
+            io.emit('listaProductos', products.docs);
         })
 
         socketClient.on('disconnect', () =>{

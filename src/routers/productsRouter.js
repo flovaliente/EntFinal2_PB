@@ -2,43 +2,71 @@ import { Router } from 'express';
 //import ProductManagerFS from '../clases/ProductManagerFS.js';
 import ProductManagerDB from '../dao/ProductManagerDB.js';
 import { uploader } from '../utils/multerUtil.js';
+import productModel from '../dao/models/productModel.js';
 
 const productsRouter = Router();
 
 const productManager = new ProductManagerDB();
 
-// -Get products
+const buildResponse = (data) => { 
+    return {
+        status: 'success',
+        payload: data.docs.map( (product) => product.toJSON()),
+        totalPages: data.totalPages,
+        prevPage: data.prevPage,
+        nextPage: data.nextPage,
+        page: data.page,
+        hasPrevPage: data.hasPrevPage,
+        hasNextPage: data.nextPage,
+        prevLink: data.hasPrevPage ? `http://localhost:8080/api/products?limit=${data.limit}&page=${data.prevPage}${data.category ? `&category=${data.category}` : ""}${data.stock ? `&stock=${data.stock}` : ""}` : "",
+        nextLink: data.hasNextPage ? `http://localhost:8080/api/products?limit=${data.limit}&page=${data.nextPage}${data.category ? `&category=${data.category}` : ""}${data.stock ? `&stock=${data.stock}` : ""}` : ""
+    };
+};
+
+// -Get products-
 productsRouter.get('/', async (req, res) =>{
     try {
-        const products = await productManager.getProducts();
-        const { limit } = req.query;
-        if(!limit)
-            res.status(200).send({
-                status: 'success',
-                payload: products
-            });
-        else
-            res.status(200).send({
-                status: 'success',
-                payload: products.slice(0, parseInt(limit))
-            });
+        const { page = 1, limit = 10, category, stock, query, sort } = req.query;
+        const options = { page, limit, sort: { price: sort || "asc"} };
+        const criteria = {};
+
+        if(category){
+            criteria.category = category;
+        }
+
+        if(query){
+            query = JSON.parse(query);
+            criteria.query = query;
+        }
+
+        const products = await productManager.getProducts(criteria, options);
+        //const products = await productModel.paginate(criteria, options);
+        console.log(products);
+
+        res.status(200).render("home", buildResponse({ ...products, category, stock }));
+
     } catch (error) {
         res.status(500).send('Internal server error.');
     }
     
 });
 
-// -Get product by id
+// -Get product by id-
 productsRouter.get('/:pid', async (req, res) =>{ 
     try {
         const { pid } = req.params;
         const product = await productManager.getProductById(pid);
-        res.status(200).send({
-            status: 'success',
-            payload: product
-        });
+        
+        if(product){
+            res.status(200).render('products', buildResponse(product));
+        }else{
+            res.status(404).send({
+                status: 'error',
+                message: `Product ${pid} not found.`
+            });
+        }
     } catch (error) {
-        res.status(404).send({
+        res.status(400).send({
             status: 'error',
             message: error.message
         });
@@ -53,7 +81,7 @@ productsRouter.post('/', uploader.array('thumbnails', 3), async (req, res) => {
             req.body.thumbnails.push(file.filename);
         });
     }
-
+    console.log(req.body);
     try {
         const result = await productManager.addProduct(req.body);
         
