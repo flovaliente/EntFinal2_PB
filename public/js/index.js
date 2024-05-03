@@ -63,5 +63,31 @@
         });
     });
   
+    function showProductSocket(products) {
+        productsListSocket.innerHTML = "";
+        products.forEach((product) => {
+          const prod = document.createElement("div");
+          prod.className = "card";
+          prod.innerHTML = `
+          <div class="central">
+              <div class="cntrlBox">
+                  <div class="container-products" id="seccionprod">
+                      <div class="products" id="${product._id}">
+                          <img src="${product.thumbnails}" class="product__img" width="400" height="430" >
+                          <div class="product-description">
+                            <h3 class="product__title">${product.title}</h3>
+                            <span class="product-price">$ ${product.price}</span>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>`;
+          productsListSocket.appendChild(prod);
+        });
+      }
+
+      socket.on("products", (...products) => {//Recibe los productos del servidor y los muestra a traves de la funcion showProductsSocket
+        showProductSocket(products);
+      });
   
   })();

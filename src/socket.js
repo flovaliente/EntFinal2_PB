@@ -10,6 +10,10 @@ export const init = (httpServer) =>{
     io.on('connection', async (socketClient) =>{
         console.log(`Nuevo cliente conectado con id: ${socketClient.id}`);
         
+        let products = await productManager.getProducts();
+        socketClient.emit("products", products.docs);//Envio los productos al cliente para que los muestre actualizados
+        socketClient.emit('listaProductos', products.docs);
+        
         socketClient.on("message", data =>{
             //console.log(`Mensaje: ${data.message}`);
             messages.push(data);
@@ -22,8 +26,6 @@ export const init = (httpServer) =>{
             socketClient.broadcast.emit("newUser", data); //Emito evento a todos los demas usuarios de que un nuevo usuario de conecto
         });
         
-        let products = await productManager.getProducts();
-        socketClient.emit('listaProductos', products.docs);
 
         socketClient.on('addProduct', async (newProduct) =>{
             await productManager.addProduct(newProduct);

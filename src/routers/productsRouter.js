@@ -43,7 +43,7 @@ productsRouter.get('/', async (req, res) =>{
         //const products = await productModel.paginate(criteria, options);
         console.log(products);
 
-        res.status(200).render("home", buildResponse({ ...products, category, stock }));
+        res.status(200).render("products", buildResponse({ ...products, category, stock }));
 
     } catch (error) {
         res.status(500).send('Internal server error.');
