@@ -12,8 +12,19 @@
             stock: document.getElementById('stockProduct').value,
             category: document.getElementById('categoryProduct').value
         };
+        Swal.fire(
+            "Added!",
+            `Your product ${idDeleteProduct.value} has been added.`,
+            "success"
+        );
+        
         socket.emit('addProduct', newProduct);
-  
+        document.getElementById('titleProduct').value = '';
+        document.getElementById('descriptionProduct').value = '';
+        document.getElementById('codeProduct').value = '';
+        document.getElementById('priceProduct').value = '';
+        document.getElementById('stockProduct').value = '';
+        document.getElementById('categoryProduct').value = '';
     });
   
     document.getElementById('deleteProduct').addEventListener('submit', (e) =>{

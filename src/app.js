@@ -15,7 +15,7 @@ import { __dirname } from './utils.js';
 const app = express();
 
 //MongoDB connect
-const URI = 'mongodb+srv://developer:floPB2024@cluster0.5koqaoi.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
+const URI = 'mongodb+srv://developer:floPB2024@cluster0.5koqaoi.mongodb.net/ecommerce?retryWrites=true&w=majority&appName=Cluster0';
 mongoose.connect(URI);
 
 //Middlewares
