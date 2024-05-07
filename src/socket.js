@@ -1,17 +1,21 @@
 import { Server } from 'socket.io';
 import ProductManagerDB from './dao/ProductManagerDB.js';
+import CartManagerDB from './dao/CartManagerDB.js';
 
 let io;
 const productManager = new ProductManagerDB();
+const cartManager = new CartManagerDB();
 
 export const init = (httpServer) =>{
     io = new Server(httpServer);
     const messages = [];
     io.on('connection', async (socketClient) =>{
         console.log(`Nuevo cliente conectado con id: ${socketClient.id}`);
-        
+        //let carts = await cartManager.getCarts();
         let products = await productManager.getProducts();
-        socketClient.emit("products", products.docs);//Envio los productos al cliente para que los muestre actualizados
+        //socketClient.emit("carts", carts);
+        //console.log(carts.docs);
+        //socketClient.emit("products", products.docs);//Envio los productos al cliente para que los muestre actualizados
         socketClient.emit('listaProductos', products.docs);
         
         socketClient.on("message", data =>{

@@ -58,7 +58,7 @@ productsRouter.get('/:pid', async (req, res) =>{
         const product = await productManager.getProductById(pid);
         
         if(product){
-            res.status(200).render('products', buildResponse(product));
+            res.status(200).send(product);
         }else{
             res.status(404).send({
                 status: 'error',

@@ -1,0 +1,14 @@
+button{
+    display: block;
+    cursor: pointer;
+    padding-top: 40px;
+    background: none;
+    background-color: transparent;
+    border: none;
+    color: #222222;
+    transition: .2s;
+}
+button:hover{
+    color:#222222;
+    background-color: transparent;
+}

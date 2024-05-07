@@ -2,6 +2,7 @@ import { Router } from 'express';
 //import CartManagerFS from '../clases/CartManagerFS.js';
 //import ProductManagerFS from '../clases/ProductManagerFS.js';
 import CartManagerDB from '../dao/CartManagerDB.js';
+import cartModel from '../dao/models/cartModel.js';
 //import ProductManagerDB from '../dao/ProductManagerDB.js';
 
 
@@ -46,17 +47,45 @@ router.get('/', async (req, res) => {
 router.get('/:cid', async (req, res) => {
     try{
         const { cid } = req.params;
-        const cart = await cartManager.getCartById(cid, true);
-        console.log(cart);
-        res.status(200).send({
-            status: 'success',
-            payload: cart
-        });
+        const cart = await cartModel.findById(cid).populate("products.productId").lean();
+        //const cart = await cartManager.getCartById(cid, true);
+        console.log(cart.products);
+        res.status(200).render('cart', cart);
     }catch (error){
         res.status(error.statusCode || 500).send({
             status: 'error',
             message: error.message
         });
+    }
+});
+
+router.put('/:cid', async (req, res) =>{
+    try {
+        
+    } catch (error) {
+        
+    }
+});
+
+// -Actualizar el quantity
+router.put('/:cid/product/:pid', async (req, res) =>{
+    try {
+        const { cid, pid } = req.params;
+        const quantity = req.body.quantity;
+        console.log(quantity);
+
+        await cartManager.updateQuantityCart(cid, pid, quantity);
+
+        res.status(200).send({
+            status:'success',
+            message: 'Quantity updated successfully.'
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(400).send({
+            status: 'error',
+            message: error.message}
+        );
     }
 });
 

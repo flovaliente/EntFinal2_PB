@@ -2,8 +2,10 @@ import { Router } from 'express';
 //import ProductManagerFS from '../clases/ProductManagerFS.js';
 import ProductManagerDB from '../dao/ProductManagerDB.js';
 import productModel from '../dao/models/productModel.js';
+import CartManagerDB from '../dao/CartManagerDB.js';
 
 const productManager = new ProductManagerDB();
+const cartManager = new CartManagerDB();
 
 const router = Router();
 
@@ -31,6 +33,17 @@ router.get('/products', async (req, res) => {
     res.status(500).send('Error.');
   }
   
+});
+
+router.get('/cart/:cid', async (req, res) =>{
+  try {
+    let { cid } = req.query;
+    let cart = await cartManager.getCartById(cid, true);
+    res.render("cart", { title: "Cart view", cart });
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).send('Error.');
+  }
 });
 
 router.get('/realtimeproducts', async (req, res) => {
